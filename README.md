@@ -19,3 +19,8 @@ Commands available
 |,| Lee un byte del flujo de entrada y lo almacena en el byte apuntado.|
 |[| Avanza a la instrucción inmediatamente posterior al ] correspondiente si el byte actualmente apuntado es nulo (si es 0).|
 |]| Retrocede a la instrucción inmediatamente posterior al [ correspondiente si el byte actualmente apuntado no es nulo (si es distinto de 0)|
+
+---
+Requires `nasm`
+
+    sudo apt install -y nasm
