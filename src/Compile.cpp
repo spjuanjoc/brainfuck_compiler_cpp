@@ -6,21 +6,39 @@
 #include <fstream>
 #include <iterator>
 #include <stack>
+#include <fmt/ostream.h>
 
 using std::string;
 using std::stringstream;
 using std::ifstream;
 using std::ofstream;
 
+constexpr auto arg_reg = "dil"; // linux only
+
 void compile(std::string_view source = "../example")
 {
   string brainfuckfile{source};
-  string assemblyFile{source};
   brainfuckfile.append(".bf");
-  assemblyFile.append(".asm");
 
   ifstream ifs{brainfuckfile};
-  ofstream ofs{assemblyFile};
+  ofstream ofs{"tmp.asm"};
+
+  auto prolog = R"(
+  global _start
+  extern getchar
+  extern putchar
+  extern exit
+  section .text
+_start:
+  sub rsp, 4000
+  mov eax, 0
+  mov ecx, 4000
+  mov rdi, rsp
+  rep stosb
+  mov r12, rsp
+  sub rsp, 64
+)";
+  ofs << prolog;
 
   if (ifs)
   {
@@ -48,29 +66,39 @@ void compile(std::string_view source = "../example")
             << "  call getchar\n" // read byte from function getchar
             << "  mov byte [r12], al\n"; // al = r12 content
           break;
-        case '.': ofs
-          << "  mov cl, [r12]\n" // cl = r12 content
-          << "  call putchar\n"; // write to byte with function putchar
+        case '.': fmt::print(ofs,
+          "  mov {0}, [r12]\n" // cl = r12 content
+          "  call putchar\n", arg_reg); // write to byte with function putchar
           break;
 
         // ..++-[--,,,,]..
         //      ^           begin of the loop: use assembly labels
         // The loops may be nested
-        case '[': ofs
-          << "label" << current_label << "start:\n" // assign a label: label0start:
-          << "  cmp byte [r12], 0\n" // if [ = 0 skip the whole loop
-          << "  jz label" << current_label << "end\n"; // label0end
+        case '[':
+          fmt::print(ofs,
+                     "label{0}start:\n"        // assign a label: label0start:
+                     "  cmp byte [r12], 0\n"  // if [ = 0 skip the whole loop
+                     "  jz label{0}end\n",
+                     current_label);  // label0end
           labels.push(current_label);
           current_label++;
           break;
 
-        case ']': ofs
-          << "  jump label" << labels.top() << "start\n" // go to [
-          << "label" << labels.top() << "end:\n";
+        case ']':
+          fmt::print(ofs,
+                     "  jmp label{0}start\n"  // go to [
+                     "label{0}end:\n",
+                     labels.top());
           labels.pop();
           break;
         default: break;
       }
     }
   }
+  auto epilog = R"(
+  add rsp, 4064
+  mov eax, 0
+  call exit
+)";
+  ofs << epilog;
 }
