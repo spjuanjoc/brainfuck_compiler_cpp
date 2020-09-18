@@ -7,6 +7,5 @@
 
 void link()
 {
-  std::system("ld tmp.o -o hello");
-//  std::system("ld -c tmp.o -o hello -I /lib64/ld-linux-x86-64.so.2");
+  std::system("ld -lc tmp.o -o hello -I /lib64/ld-linux-x86-64.so.2");
 }
