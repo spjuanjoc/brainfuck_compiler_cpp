@@ -3,4 +3,4 @@
 //
 #pragma once
 
-void link(){};
+void link();
