@@ -65,3 +65,6 @@ arch.c
 
 # Testing
 Testing/
+
+# Assembly
+*.asm
