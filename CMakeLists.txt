@@ -8,7 +8,7 @@ option(ENABLE_CONAN "Enable Conan" OFF)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux") # .cc .hh
   set(PLATFORM_EXTENSION cc)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows") # .cxx .hxx
-  set(PLATFORM_EXTENSION cxx)
+#  set(PLATFORM_EXTENSION cxx)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") # .mm .h
 #  set(PLATFORM_EXTENSION mm)
 endif()
@@ -18,6 +18,8 @@ set(SOURCES
     src/Compile.cpp
     src/Assemble.${PLATFORM_EXTENSION}
     src/Link.${PLATFORM_EXTENSION}
+    src/Exec.${PLATFORM_EXTENSION}
+    src/Run.${PLATFORM_EXTENSION}
     )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
