@@ -2,7 +2,6 @@
 // Created by juan.castellanos on 17/09/20.
 //
 
-#include <fmt/format.h>
 #include <cstdlib>
 
 void link()
